@@ -4,54 +4,50 @@ from components.utility_functions import read_readme, update_instructions
 from components.standard_values import STANDARD_TEXT_MODELS, STANDARD_AUDIO_MODELS, STANDARD_VOICES
 from components.feedback_processing import process_feedback_and_regenerate
 
+def load_css(file_path: str) -> str:
+    """CSSファイルを読み込む関数
+
+    Args:
+        file_path (str): CSSファイルのパス
+
+    Returns:
+        str: CSSファイルの内容
+    """
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            return f.read()
+    except Exception as e:
+        print(f"CSSファイルの読み込みに失敗しました: {e}")
+        return ""
+
 def gradio_ui():
+    css_content = load_css("static/styles.css")
+    
     with gr.Blocks(
         title="PDFをオーディオポッドキャスト、講義、要約などに変換", 
-        theme=gr.themes.Ocean(),
-        css="""
-        #header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 20px;
-            background-color: transparent;
-            border-bottom: 1px solid #ddd;
-        }
-        #title {
-            font-size: 24px;
-            margin: 0;
-        }
-        #logo_container {
-            width: 300px;
-            height: 300px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        #logo_image {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-        #main_container {
-            margin-top: 20px;
-        }
-    """) as demo:
+        theme=gr.themes.Soft(),
+        css=css_content
+    ) as demo:
         
         with gr.Row(elem_id="header"):
             with gr.Column(scale=4):
-                gr.Markdown("# PDFをオーディオポッドキャスト、講義、要約などに変換\n\nまず、1つ以上のPDFをアップロードし、オプションを選択してから、オーディオ生成をクリックしてください。\n\nまた、さまざまなカスタムオプションを選択して、結果の生成方法を指定することもできます。", elem_id="title")
-            with gr.Column(scale=1):
+                gr.Markdown("""
+                # PDFをオーディオポッドキャスト、講義、要約などに変換
+
+                まず、1つ以上のPDFをアップロードし、オプションを選択してから、オーディオ生成をクリックしてください。
+                また、さまざまなカスタムオプションを選択して、結果の生成方法を指定することもできます。
+                """, elem_id="title")
+            with gr.Column(scale=1, elem_classes="animate-fade-in"):
                 gr.HTML('''
                     <div id="logo_container">
-                        <img src="https://github.com/user-attachments/assets/61484a70-012e-4df9-905e-f0faccca7b8c" id="logo_image" alt="Logo">
+                        <img src="https://github.com/user-attachments/assets/4aad8436-6d5b-4b5b-9e1a-dc006abfdd18" id="logo_image" alt="Logo">
                     </div>
                 ''')
         #gr.Markdown("")    
         submit_btn = gr.Button("オーディオを生成", elem_id="submit_btn")
 
         with gr.Row(elem_id="main_container"):
-            with gr.Column(scale=2):
+            with gr.Column(scale=2, elem_classes="input-container"):
                 files = gr.Files(label="PDFファイル", file_types=["pdf"], )
                 
                 openai_api_key = gr.Textbox(
