@@ -23,6 +23,7 @@ class AudioConfig(BaseModel):
 def get_mp3(text: str, voice: str, audio_model: str, api_key: str = None) -> bytes:
     
     logger.info(f"音声生成開始: 文字数: {len(text)} | 声: {voice} | モデル: {audio_model}")
+    logger.info(f"生成するテキスト: {text}")
     client = OpenAI(
         api_key=api_key or os.getenv("OPENAI_API_KEY"),
     )
@@ -34,7 +35,6 @@ def get_mp3(text: str, voice: str, audio_model: str, api_key: str = None) -> byt
     ) as response:
         with io.BytesIO() as file:
             for chunk in response.iter_bytes():
-                logger.debug(f"受信したチャンクサイズ: {len(chunk)} バイト")
                 file.write(chunk)
             logger.info("音声生成完了: 全チャンク受信完了")
             return file.getvalue()
@@ -49,16 +49,23 @@ def generate_audio_from_transcript(transcript, speaker_1_voice, speaker_2_voice,
     with cf.ThreadPoolExecutor() as executor:
         futures = []
         for line in transcript:
-            transcript_line = f"{line.speaker}: {line.text}"
-            voice = speaker_1_voice if line.speaker == "speaker-1" else speaker_2_voice
-            future = executor.submit(get_mp3, line.text, voice, audio_model, openai_api_key)
-            futures.append((future, transcript_line))
-            characters += len(line.text)
+            # 話者とテキストを分割（「ホスト:」や「ゲスト:」の部分を除去）
+            text = line.text.split(":", 1)[1].strip() if ":" in line.text else line.text.strip()
+            # 話者に応じて異なる声を使用
+            voice = speaker_1_voice if line.speaker == "ホスト" else speaker_2_voice
+            logger.info(f"話者: {line.speaker}, 声: {voice}, テキスト: {text}")
+            # テキストのみを渡す
+            future = executor.submit(get_mp3, text, voice, audio_model, openai_api_key)
+            futures.append((future, text))
+            characters += len(text)
 
-        for future, transcript_line in futures:
-            audio_chunk = future.result()
-            audio += audio_chunk
-            #transcript += transcript_line + "\n\n" # Not needed here
+        for future, text in futures:
+            try:
+                audio_chunk = future.result()
+                audio += audio_chunk
+            except Exception as e:
+                logger.error(f"音声生成エラー: {str(e)}, テキスト: {text}")
+                raise
 
     logger.info(f"Generated {characters} characters of audio")
 
