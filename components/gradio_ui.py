@@ -82,16 +82,16 @@ def gradio_ui():
                     info="音声を生成するモデルを選択してください。",
                 )
                 speaker_1_voice = gr.Dropdown(
-                    label="話者1の声",
+                    label="ホストの声",
                     choices=STANDARD_VOICES,
                     value="alloy",
-                    info="話者1の声を選択してください。",
+                    info="ホストの声を選択してください。",
                 )
                 speaker_2_voice = gr.Dropdown(
-                    label="話者2の声",
+                    label="ゲストの声",
                     choices=STANDARD_VOICES,
                     value="echo",
-                    info="話者2の声を選択してください。",
+                    info="ゲストの声を選択してください。",
                 )
                 api_base = gr.Textbox(
                     label="カスタムAPIベースURL",
@@ -173,7 +173,8 @@ def gradio_ui():
                 files,  # ファイルを最初に
                 text_model,  # モデル名
                 audio_model,  # TTSモデル
-                speaker_1_voice,  # 音声ID
+                speaker_1_voice,  # ホストの声
+                speaker_2_voice,  # ゲストの声
                 template_dropdown,  # 指示テンプレート
                 openai_api_key,  # APIキー
                 api_base,  # APIベースURL
@@ -205,16 +206,17 @@ def gradio_ui():
                 args[1],  # text_model
                 args[2],  # audio_model
                 args[3],  # speaker_1_voice
-                args[4],  # template_dropdown
-                args[5],  # openai_api_key
-                args[6],  # api_base
-                args[7],  # intro_instructions
-                args[8],  # text_instructions
-                args[9],  # scratch_pad_instructions
-                args[10],  # prelude_dialog
-                args[11],  # podcast_dialog_instructions
+                args[4],  # speaker_2_voice
+                args[5],  # template_dropdown
+                args[6],  # openai_api_key
+                args[7],  # api_base
+                args[8],  # intro_instructions
+                args[9],  # text_instructions
+                args[10],  # scratch_pad_instructions
+                args[11],  # prelude_dialog
+                args[12],  # podcast_dialog_instructions
                 edit if use_edit else "",  # edited_transcript
-                args[12]  # user_feedback
+                args[13]  # user_feedback
             ),
             inputs=[
                 use_edited_transcript,
@@ -223,6 +225,7 @@ def gradio_ui():
                 text_model,
                 audio_model,
                 speaker_1_voice,
+                speaker_2_voice,
                 template_dropdown,
                 openai_api_key,
                 api_base,
