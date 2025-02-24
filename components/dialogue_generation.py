@@ -115,8 +115,8 @@ def generate_dialogue(
 
         # OpenAIのAPIを使用して対話を生成
         client = OpenAI(
-            api_key=os.getenv("OPENAI_API_KEY"),
-            base_url=config.api_base if config.api_base else None
+            api_key=os.getenv("LLM_API_KEY"),
+            base_url=config.api_base if config.api_base else os.getenv("LLM_API_BASE")
         )
 
         # システムプロンプトの構築
