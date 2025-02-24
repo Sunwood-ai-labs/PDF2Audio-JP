@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 class DialogueItem(BaseModel):
     text: str
-    speaker: Literal["speaker-1", "speaker-2"]
+    speaker: Literal["ホスト", "ゲスト"]
 
 class Dialogue(BaseModel):
     scratchpad: str
