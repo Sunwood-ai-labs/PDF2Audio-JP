@@ -97,6 +97,75 @@
     border: 1px solid rgba(191, 65, 124, 0.1);
 }
 
+/* API設定タブのスタイル */
+.api-settings-container {
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.api-settings-container h3 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+}
+
+.api-settings-container .input-container {
+    margin-bottom: 15px;
+}
+
+.api-settings-container input[type="password"] {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px;
+    width: 100%;
+}
+
+.api-settings-container input[type="text"] {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px;
+    width: 100%;
+}
+
+/* タブのスタイル */
+.tabs {
+    margin-bottom: 20px;
+}
+
+.tab-nav {
+    display: flex;
+    background-color: #f1f3f5;
+    border-radius: 8px 8px 0 0;
+    overflow: hidden;
+}
+
+.tab-nav button {
+    padding: 12px 24px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.tab-nav button:hover {
+    background-color: #e9ecef;
+}
+
+.tab-nav button.active {
+    background-color: #fff;
+    border-bottom: 2px solid #007bff;
+}
+
+.tab-content {
+    background-color: #fff;
+    border-radius: 0 0 8px 8px;
+    padding: 20px;
+}
+
 /* アニメーション */
 @keyframes fadeIn {
     from { 
