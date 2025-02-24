@@ -1,57 +1,115 @@
-def process_feedback_and_regenerate(files, text_model, audio_model, speaker_1_voice, template_dropdown, openai_api_key, api_base, intro_instructions, text_instructions, scratch_pad_instructions, prelude_dialog, podcast_dialog_instructions, edited_transcript, user_feedback):
-    return validate_and_generate_audio(files, text_model, audio_model, speaker_1_voice, template_dropdown, openai_api_key, api_base, intro_instructions, text_instructions, scratch_pad_instructions, prelude_dialog, podcast_dialog_instructions, edited_transcript, user_feedback)
+from typing import Optional, Tuple, Any
+from pydantic import BaseModel, ValidationError
+from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
+from loguru import logger
+from .dialogue_generation import DialogueConfig, DialogueLine, generate_dialogue
+from .audio_generation import generate_audio
+from pathlib import Path
+from pypdf import PdfReader
+import os
+import gradio as gr
+import sys
 
-def edit_and_regenerate(edited_transcript, user_feedback, *args):
-    # Replace the original transcript and feedback in the args with the new ones
-    #new_args = list(args)
-    #new_args[-2] = edited_transcript  # Update edited transcript
-    #new_args[-1] = user_feedback  # Update user feedback
-    return validate_and_generate_audio(*new_args)
+class FeedbackConfig(BaseModel):
+    """フィードバック処理の設定を定義するモデル"""
+    files: Any
+    text_model: str
+    audio_model: str
+    speaker_1_voice: str
+    template_dropdown: str
+    openai_api_key: str
+    api_base: Optional[str] = None
+    intro_instructions: str
+    text_instructions: str
+    scratch_pad_instructions: str
+    prelude_dialog: str
+    podcast_dialog_instructions: str
 
-def validate_and_generate_audio(*args):
-    from pathlib import Path
-    from pypdf import PdfReader
-    from components.dialogue_generation import generate_dialogue
-    from components.audio_generation import generate_audio_from_transcript
-    from components.data_models import Dialogue
-    import os
-    import gradio as gr
-    from loguru import logger
-    import sys
+@retry(
+    retry=retry_if_exception_type((ValidationError, Exception)),
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=1, min=4, max=10)
+)
+def process_feedback_and_regenerate(
+    files, text_model, audio_model, speaker_1_voice,
+    template_dropdown, openai_api_key, api_base,
+    intro_instructions, text_instructions,
+    scratch_pad_instructions, prelude_dialog,
+    podcast_dialog_instructions, edited_transcript,
+    user_feedback
+) -> Tuple[Optional[str], Optional[str], Optional[str], Optional[str]]:
+    """フィードバックを処理し、オーディオを再生成する関数
 
-    # ログの設定
-    logger.remove()  # 既存のハンドラを削除
-    logger.add(sys.stderr, format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>")
-    logger.add("processing.log", rotation="500 MB")  # ファイルにもログを出力
+    Args:
+        files: アップロードされたファイル
+        text_model: テキスト生成モデル
+        audio_model: 音声生成モデル
+        speaker_1_voice: 話者1の声
+        template_dropdown: 指示テンプレート
+        openai_api_key: OpenAI APIキー
+        api_base: APIベースURL
+        intro_instructions: 導入指示
+        text_instructions: テキスト分析指示
+        scratch_pad_instructions: メモ帳指示
+        prelude_dialog: 前置き対話
+        podcast_dialog_instructions: ポッドキャスト対話指示
+        edited_transcript: 編集済みトランスクリプト
+        user_feedback: ユーザーフィードバック
 
-    # すべての引数をログに記録
-    logger.info("受け取った引数一覧:")
-    for i, arg in enumerate(args):
-        logger.info(f"引数 {i}: {arg}")
-
-    # 引数の展開とログ
-    files, model_name, tts_model, voice_id, instruction_template, openai_api_key, api_base, *other_args = args
-    logger.info(f"ファイル: {files}")
-    logger.info(f"モデル名: {model_name}")
-    logger.info(f"TTSモデル: {tts_model}")
-    logger.info(f"音声ID: {voice_id}")
-    logger.info(f"指示テンプレート: {instruction_template}")
-    logger.info(f"APIキー: {'*' * len(openai_api_key) if openai_api_key else 'なし'}")  # APIキーを隠してログ出力
-    logger.info(f"APIベースURL: {api_base}")
-    logger.info(f"その他の引数: {[arg[:50] + '...' if isinstance(arg, str) and len(arg) > 50 else arg for arg in other_args]}")
-    
-    # ファイルチェック
-    if not files or not any(files):
-        logger.warning("ファイルが提供されていません")
-        return None, None, None, "ファイルをアップロードしてください。"
-
-    # ファイルリストの正規化
-    if isinstance(files, str):
-        files = [files]
-    
-    logger.info(f"処理するファイル数: {len(files)}")
-        
+    Returns:
+        Tuple[Optional[str], Optional[str], Optional[str], Optional[str]]: 
+            (audio_output, transcript_output, original_text_output, error_output)
+    """
     try:
+        # 設定のバリデーション
+        config = FeedbackConfig(
+            files=files,
+            text_model=text_model,
+            audio_model=audio_model,
+            speaker_1_voice=speaker_1_voice,
+            template_dropdown=template_dropdown,
+            openai_api_key=openai_api_key,
+            api_base=api_base,
+            intro_instructions=intro_instructions,
+            text_instructions=text_instructions,
+            scratch_pad_instructions=scratch_pad_instructions,
+            prelude_dialog=prelude_dialog,
+            podcast_dialog_instructions=podcast_dialog_instructions
+        )
+
+        # ログの設定
+        logger.remove()  # 既存のハンドラを削除
+        logger.add(sys.stderr, format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>")
+        logger.add("processing.log", rotation="500 MB")  # ファイルにもログを出力
+
+        # すべての引数をログに記録
+        logger.info("受け取った引数一覧:")
+        for i, arg in enumerate([files, text_model, audio_model, speaker_1_voice, template_dropdown, openai_api_key, api_base, intro_instructions, text_instructions, scratch_pad_instructions, prelude_dialog, podcast_dialog_instructions, edited_transcript, user_feedback]):
+            logger.info(f"引数 {i}: {arg}")
+
+        # 対話生成の設定
+        dialogue_config = DialogueConfig(
+            model_name=config.text_model,
+            template_type=config.template_dropdown,
+            intro_instructions=config.intro_instructions,
+            text_instructions=config.text_instructions,
+            scratch_pad_instructions=config.scratch_pad_instructions,
+            prelude_dialog=config.prelude_dialog,
+            podcast_dialog_instructions=config.podcast_dialog_instructions,
+            api_base=config.api_base
+        )
+
+        # ファイルチェック
+        if not files or not any(files):
+            logger.warning("ファイルが提供されていません")
+            return None, None, None, "ファイルをアップロードしてください。"
+
+        # ファイルリストの正規化
+        if isinstance(files, str):
+            files = [files]
+        
+        logger.info(f"処理するファイル数: {len(files)}")
+        
         # Combine text from uploaded files
         combined_text = ""
         processed_files = 0
@@ -155,47 +213,47 @@ def validate_and_generate_audio(*args):
         logger.info(f"処理完了: 合計 {processed_files} ファイル")
         logger.info(f"合計テキスト長: {len(combined_text)} 文字")
 
-        # Generate dialogue
-        intro_instructions = other_args[0]
-        text_instructions = other_args[1]
-        scratch_pad_instructions = other_args[2]
-        prelude_dialog = other_args[3]
-        podcast_dialog_instructions = other_args[4]
-        api_base = other_args[5]
-
-        edited_transcript = other_args[6] if len(other_args) > 6 else ""
-        user_feedback = other_args[7] if len(other_args) > 7 else ""
-
-        instruction_improve='Based on the original text, please generate an improved version of the dialogue by incorporating the edits, comments and feedback.'
-        edited_transcript_processed="\nPreviously generated edited transcript, with specific edits and comments that I want you to carefully address:\n"+"<edited_transcript>\n"+edited_transcript+"</edited_transcript>" if edited_transcript !="" else ""
-        user_feedback_processed="\nOverall user feedback:\n\n"+user_feedback if user_feedback !="" else ""
-
-        if edited_transcript_processed.strip()!='' or user_feedback_processed.strip()!='':
-            user_feedback_processed="<requested_improvements>"+user_feedback_processed+"\n\n"+instruction_improve+"</requested_improvements>" 
-
-        dialogue: Dialogue = generate_dialogue(
-            combined_text,
-            intro_instructions=intro_instructions,
-            text_instructions=text_instructions,
-            scratch_pad_instructions=scratch_pad_instructions,
-            prelude_dialog=prelude_dialog,
-            podcast_dialog_instructions=podcast_dialog_instructions,
-            edited_transcript=edited_transcript_processed,
-            user_feedback=user_feedback_processed
+        # 対話を生成
+        logger.info("LLM生成開始: generate_dialogue関数を呼び出します")
+        dialogue_lines = generate_dialogue(
+            text=combined_text,
+            config=dialogue_config,
+            edited_transcript=edited_transcript,
+            user_feedback=user_feedback
         )
+        if not dialogue_lines:
+            return None, None, None, "対話生成に失敗しました"
+        logger.info("LLM生成完了: generate_dialogueが正常に返りました")
 
-        # Generate audio from the transcript
-        speaker_1_voice = voice_id
-        speaker_2_voice = voice_id
-        audio_model = tts_model
-        audio_file = generate_audio_from_transcript(dialogue.dialogue, speaker_1_voice, speaker_2_voice, audio_model, openai_api_key)
+        # 音声生成用のテキストを準備
+        dialogue_text = "\n\n".join([f"{line.speaker}: {line.text}" for line in dialogue_lines])
+        if not dialogue_text:
+            return None, None, None, "対話テキストの生成に失敗しました"
+        logger.info(f"生成された対話テキスト長: {len(dialogue_text)}")
 
-        # Prepare transcript for output
-        transcript = ""
-        for line in dialogue.dialogue:
-            transcript += f"{line.speaker}: {line.text}\n\n"
+        # 音声を生成
+        logger.info("音声生成を開始します")
+        audio = generate_audio(
+            text=dialogue_text,
+            model=config.audio_model,
+            voice=config.speaker_1_voice
+        )
+        if not audio:
+            return None, None, None, "音声生成に失敗しました"
+        logger.info("音声生成が完了しました")
 
-        return audio_file, transcript, combined_text, None  # Return None as the error when successful
+        # トランスクリプトの準備
+        transcript_output = dialogue_text
+
+        return audio, transcript_output, combined_text, None  # エラーがない場合はNoneを返す
+
     except Exception as e:
         # If an error occurs during generation, return None for the outputs and the error message
-        return None, None, None, str(e)
+        import traceback
+        error_msg = f"エラーが発生しました: {str(e)}\n{traceback.format_exc()}"
+        logger.error(error_msg)
+        return None, None, None, error_msg
+
+def edit_and_regenerate(edited_transcript, user_feedback, *args):
+    """編集されたトランスクリプトとフィードバックを使用して再生成を行う関数"""
+    return process_feedback_and_regenerate(*args[:-2], edited_transcript, user_feedback)
