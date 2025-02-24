@@ -3,7 +3,7 @@ from pydantic import BaseModel, ValidationError
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 from loguru import logger
 from .dialogue_generation import DialogueConfig, DialogueLine, generate_dialogue
-from .audio_generation import generate_audio
+from .audio_generation import generate_audio_from_transcript
 from pathlib import Path
 from pypdf import PdfReader
 import os
@@ -16,6 +16,7 @@ class FeedbackConfig(BaseModel):
     text_model: str
     audio_model: str
     speaker_1_voice: str
+    speaker_2_voice: str
     template_dropdown: str
     openai_api_key: str
     api_base: Optional[str] = None
@@ -31,7 +32,7 @@ class FeedbackConfig(BaseModel):
     wait=wait_exponential(multiplier=1, min=4, max=10)
 )
 def process_feedback_and_regenerate(
-    files, text_model, audio_model, speaker_1_voice,
+    files, text_model, audio_model, speaker_1_voice, speaker_2_voice,
     template_dropdown, openai_api_key, api_base,
     intro_instructions, text_instructions,
     scratch_pad_instructions, prelude_dialog,
@@ -44,7 +45,8 @@ def process_feedback_and_regenerate(
         files: アップロードされたファイル
         text_model: テキスト生成モデル
         audio_model: 音声生成モデル
-        speaker_1_voice: 話者1の声
+        speaker_1_voice: ホストの声
+        speaker_2_voice: ゲストの声
         template_dropdown: 指示テンプレート
         openai_api_key: OpenAI APIキー
         api_base: APIベースURL
@@ -67,6 +69,7 @@ def process_feedback_and_regenerate(
             text_model=text_model,
             audio_model=audio_model,
             speaker_1_voice=speaker_1_voice,
+            speaker_2_voice=speaker_2_voice,
             template_dropdown=template_dropdown,
             openai_api_key=openai_api_key,
             api_base=api_base,
@@ -84,7 +87,7 @@ def process_feedback_and_regenerate(
 
         # すべての引数をログに記録
         logger.info("受け取った引数一覧:")
-        for i, arg in enumerate([files, text_model, audio_model, speaker_1_voice, template_dropdown, openai_api_key, api_base, intro_instructions, text_instructions, scratch_pad_instructions, prelude_dialog, podcast_dialog_instructions, edited_transcript, user_feedback]):
+        for i, arg in enumerate([files, text_model, audio_model, speaker_1_voice, speaker_2_voice, template_dropdown, openai_api_key, api_base, intro_instructions, text_instructions, scratch_pad_instructions, prelude_dialog, podcast_dialog_instructions, edited_transcript, user_feedback]):
             logger.info(f"引数 {i}: {arg}")
 
         # 対話生成の設定
@@ -225,25 +228,21 @@ def process_feedback_and_regenerate(
             return None, None, None, "対話生成に失敗しました"
         logger.info("LLM生成完了: generate_dialogueが正常に返りました")
 
-        # 音声生成用のテキストを準備
-        dialogue_text = "\n\n".join([f"{line.speaker}: {line.text}" for line in dialogue_lines])
-        if not dialogue_text:
-            return None, None, None, "対話テキストの生成に失敗しました"
-        logger.info(f"生成された対話テキスト長: {len(dialogue_text)}")
-
         # 音声を生成
         logger.info("音声生成を開始します")
-        audio = generate_audio(
-            text=dialogue_text,
-            model=config.audio_model,
-            voice=config.speaker_1_voice
+        audio = generate_audio_from_transcript(
+            transcript=dialogue_lines,
+            speaker_1_voice=config.speaker_1_voice,
+            speaker_2_voice=config.speaker_2_voice,
+            audio_model=config.audio_model,
+            openai_api_key=config.openai_api_key
         )
         if not audio:
             return None, None, None, "音声生成に失敗しました"
         logger.info("音声生成が完了しました")
 
         # トランスクリプトの準備
-        transcript_output = dialogue_text
+        transcript_output = "\n\n".join([f"{line.speaker}: {line.text}" for line in dialogue_lines])
 
         return audio, transcript_output, combined_text, None  # エラーがない場合はNoneを返す
 
