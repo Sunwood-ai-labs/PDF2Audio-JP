@@ -18,8 +18,11 @@ class FeedbackConfig(BaseModel):
     speaker_1_voice: str
     speaker_2_voice: str
     template_dropdown: str
-    openai_api_key: str
-    api_base: Optional[str] = None
+    llm_api_key: Optional[str] = os.getenv("LLM_API_KEY")
+    api_base: Optional[str] = os.getenv("LLM_API_BASE")
+    llm_api_base: Optional[str] = os.getenv("LLM_API_BASE")
+    tts_api_key: Optional[str] = os.getenv("TTS_API_KEY")
+    tts_api_base: Optional[str] = os.getenv("TTS_API_BASE")
     intro_instructions: str
     text_instructions: str
     scratch_pad_instructions: str
@@ -33,11 +36,9 @@ class FeedbackConfig(BaseModel):
 )
 def process_feedback_and_regenerate(
     files, text_model, audio_model, speaker_1_voice, speaker_2_voice,
-    template_dropdown, openai_api_key, api_base,
-    intro_instructions, text_instructions,
-    scratch_pad_instructions, prelude_dialog,
-    podcast_dialog_instructions, edited_transcript,
-    user_feedback
+    template_dropdown, llm_api_key, api_base, llm_api_base, tts_api_key, tts_api_base,
+    intro_instructions, text_instructions, scratch_pad_instructions, prelude_dialog,
+    podcast_dialog_instructions, edited_transcript, user_feedback
 ) -> Tuple[Optional[str], Optional[str], Optional[str], Optional[str]]:
     """フィードバックを処理し、オーディオを再生成する関数
 
@@ -48,8 +49,11 @@ def process_feedback_and_regenerate(
         speaker_1_voice: ホストの声
         speaker_2_voice: ゲストの声
         template_dropdown: 指示テンプレート
-        openai_api_key: OpenAI APIキー
+        llm_api_key: LLM APIキー
         api_base: APIベースURL
+        llm_api_base: LLM APIベースURL
+        tts_api_key: TTS APIキー
+        tts_api_base: TTS APIベースURL
         intro_instructions: 導入指示
         text_instructions: テキスト分析指示
         scratch_pad_instructions: メモ帳指示
@@ -71,8 +75,11 @@ def process_feedback_and_regenerate(
             speaker_1_voice=speaker_1_voice,
             speaker_2_voice=speaker_2_voice,
             template_dropdown=template_dropdown,
-            openai_api_key=openai_api_key,
+            llm_api_key=llm_api_key,
             api_base=api_base,
+            llm_api_base=llm_api_base,
+            tts_api_key=tts_api_key,
+            tts_api_base=tts_api_base,
             intro_instructions=intro_instructions,
             text_instructions=text_instructions,
             scratch_pad_instructions=scratch_pad_instructions,
@@ -87,7 +94,7 @@ def process_feedback_and_regenerate(
 
         # すべての引数をログに記録
         logger.info("受け取った引数一覧:")
-        for i, arg in enumerate([files, text_model, audio_model, speaker_1_voice, speaker_2_voice, template_dropdown, openai_api_key, api_base, intro_instructions, text_instructions, scratch_pad_instructions, prelude_dialog, podcast_dialog_instructions, edited_transcript, user_feedback]):
+        for i, arg in enumerate([files, text_model, audio_model, speaker_1_voice, speaker_2_voice, template_dropdown, llm_api_key, api_base, llm_api_base, tts_api_key, tts_api_base, intro_instructions, text_instructions, scratch_pad_instructions, prelude_dialog, podcast_dialog_instructions, edited_transcript, user_feedback]):
             logger.info(f"引数 {i}: {arg}")
 
         # 対話生成の設定
@@ -99,7 +106,7 @@ def process_feedback_and_regenerate(
             scratch_pad_instructions=config.scratch_pad_instructions,
             prelude_dialog=config.prelude_dialog,
             podcast_dialog_instructions=config.podcast_dialog_instructions,
-            api_base=config.api_base
+            api_base=config.llm_api_base
         )
 
         # ファイルチェック
@@ -235,7 +242,7 @@ def process_feedback_and_regenerate(
             speaker_1_voice=config.speaker_1_voice,
             speaker_2_voice=config.speaker_2_voice,
             audio_model=config.audio_model,
-            openai_api_key=config.openai_api_key
+            openai_api_key=config.llm_api_key
         )
         if not audio:
             return None, None, None, "音声生成に失敗しました"
