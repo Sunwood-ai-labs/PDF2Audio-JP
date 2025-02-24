@@ -5,6 +5,17 @@ from pydantic import BaseModel, ValidationError
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 from loguru import logger
 import sys
+from openai import OpenAI
+import os
+import io
+import os
+from pathlib import Path
+from pydantic import BaseModel, ValidationError
+from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
+from loguru import logger
+import sys
+import json
+from datetime import datetime
 
 # ログの設定
 logger.remove()  # 既存のハンドラを削除
@@ -26,6 +37,31 @@ class DialogueLine(BaseModel):
     """対話の1行を定義するモデル"""
     speaker: str
     text: str
+
+def save_debug_info(data: dict, prefix: str = "debug"):
+    """デバッグ情報をJSONファイルに保存する関数
+
+    Args:
+        data (dict): 保存するデータ
+        prefix (str, optional): ファイル名のプレフィックス. Defaults to "debug".
+    """
+    try:
+        # デバッグ用ディレクトリの作成
+        debug_dir = Path("debug_logs")
+        debug_dir.mkdir(exist_ok=True)
+
+        # タイムスタンプを含むファイル名の生成
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = debug_dir / f"{prefix}_{timestamp}.json"
+
+        # JSONファイルとして保存
+        with open(filename, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        
+        logger.info(f"デバッグ情報を保存しました: {filename}")
+
+    except Exception as e:
+        logger.error(f"デバッグ情報の保存に失敗しました: {str(e)}")
 
 @retry(
     retry=retry_if_exception_type((ValidationError, Exception)),
@@ -77,12 +113,128 @@ def generate_dialogue(
                 + "</requested_improvements>"
             )
 
-        # TODO: 実際のLLMを使用した対話生成ロジックを実装
-        # 現在はダミーの応答を返す
-        return [
-            DialogueLine(speaker="話者1", text="こんにちは、これはテストの対話です。"),
-            DialogueLine(speaker="話者2", text="はい、これはダミーの応答です。")
-        ]
+        # OpenAIのAPIを使用して対話を生成
+        client = OpenAI(
+            api_key=os.getenv("OPENAI_API_KEY"),
+            base_url=config.api_base if config.api_base else None
+        )
+
+        # システムプロンプトの構築
+        system_prompt = f"""
+        あなたは与えられたテキストを対話形式に変換するアシスタントです。
+        以下の指示に従って対話を生成してください：
+
+        【出力形式】
+        必ず以下の形式で出力してください：
+        話者1: （テキスト）
+        話者2: （テキスト）
+        話者1: （テキスト）
+        ...
+
+        各行は必ず「話者1:」または「話者2:」で始まり、その後にコロンとスペース、そして発話内容が続きます。
+        この形式以外の出力は許可されません。
+
+        【指示内容】
+        {config.intro_instructions}
+
+        テキスト分析指示：
+        {config.text_instructions}
+
+        メモ帳指示：
+        {config.scratch_pad_instructions}
+
+        前置き対話：
+        {config.prelude_dialog}
+
+        対話指示：
+        {config.podcast_dialog_instructions}
+        """
+
+        # ユーザープロンプトの構築
+        user_prompt = f"""
+        以下のテキストを対話形式に変換してください：
+
+        {text}
+
+        {edited_transcript_processed if edited_transcript else ""}
+        {user_feedback_processed if user_feedback else ""}
+        """
+
+        try:
+            # OpenAI APIを呼び出して対話を生成
+            response = client.chat.completions.create(
+                model=config.model_name,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt}
+                ],
+                temperature=0.7,
+                max_tokens=2000
+            )
+
+            # 応答から対話を抽出
+            dialogue_text = response.choices[0].message.content
+            
+            # デバッグ情報をファイルに保存
+            debug_data = {
+                "timestamp": datetime.now().isoformat(),
+                "model": config.model_name,
+                "template_type": config.template_type,
+                "system_prompt": system_prompt,
+                "user_prompt": user_prompt,
+                "response": dialogue_text,
+                "edited_transcript": edited_transcript,
+                "user_feedback": user_feedback
+            }
+            save_debug_info(debug_data, "dialogue_generation")
+            
+            # デバッグ用にレスポンスを保存
+            logger.info("OpenAI APIからのレスポンス:")
+            logger.info(dialogue_text)
+            
+            dialogue_lines = []
+
+            # 対話テキストを解析して話者と内容を分離
+            for line in dialogue_text.strip().split('\n'):
+                if not line.strip():
+                    continue
+                
+                # デバッグ用に各行の内容を出力
+                logger.debug(f"処理中の行: {line}")
+                
+                # 「話者1:」または「話者2:」で始まる行を処理
+                if '話者1:' in line or '話者2:' in line:
+                    try:
+                        speaker, text = [part.strip() for part in line.split(':', 1)]
+                        logger.debug(f"分割結果 - 話者: {speaker}, テキスト: {text}")
+                        dialogue_lines.append(
+                            DialogueLine(
+                                speaker=speaker,
+                                text=text
+                            )
+                        )
+                    except Exception as e:
+                        logger.warning(f"行の解析に失敗: {line} - エラー: {str(e)}")
+                        continue
+
+            if not dialogue_lines:
+                # デバッグ情報を記録
+                logger.error("対話生成に失敗しました：有効な対話行が見つかりません")
+                logger.error("システムプロンプト:")
+                logger.error(system_prompt)
+                logger.error("ユーザープロンプト:")
+                logger.error(user_prompt)
+                logger.error("生成された対話テキスト:")
+                logger.error(dialogue_text)
+                raise ValueError("対話生成に失敗しました")
+
+            # 生成された対話行の数を記録
+            logger.info(f"生成された対話行数: {len(dialogue_lines)}")
+            return dialogue_lines
+
+        except Exception as e:
+            logger.error(f"OpenAI APIの呼び出し中にエラーが発生しました: {str(e)}")
+            raise
 
     except Exception as e:
         logger.error(f"対話生成中にエラーが発生しました: {str(e)}")
