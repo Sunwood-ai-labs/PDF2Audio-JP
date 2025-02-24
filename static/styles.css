@@ -1,0 +1,128 @@
+/* グローバルスタイル */
+:root {
+    --primary-gradient: linear-gradient(135deg, #BF417C, #4F26A6);
+    --secondary-gradient: linear-gradient(135deg, #4F26A6, #262A73);
+    --accent-color: #BF625A;
+    --background-color: #131426;
+    --text-color: #FFFFFF;
+    --border-radius: 12px;
+    --box-shadow: 0 4px 6px rgba(19, 20, 38, 0.2);
+}
+
+/* ヘッダースタイル */
+#header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--primary-gradient);
+    border-radius: var(--border-radius);
+    margin: 1rem;
+    padding: 2rem;
+    box-shadow: var(--box-shadow);
+}
+
+#title {
+    color: var(--text-color);
+    margin: 0;
+    text-shadow: 2px 2px 4px rgba(19, 20, 38, 0.3);
+}
+
+#title h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+#title p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+#logo_container {
+    width: 200px;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(191, 65, 124, 0.1);
+    border-radius: 50%;
+    padding: 1rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 15px rgba(191, 65, 124, 0.2);
+}
+
+#logo_container:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(191, 65, 124, 0.3);
+}
+
+#logo_image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* メインコンテナスタイル */
+#main_container {
+    margin: 2rem 1rem;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    border: 1px solid rgba(191, 65, 124, 0.1);
+}
+
+/* ボタンスタイル */
+#submit_btn, button.primary {
+    background: var(--secondary-gradient) !important;
+    border: none !important;
+    border-radius: var(--border-radius) !important;
+    padding: 0.8rem 1.5rem !important;
+    color: var(--text-color) !important;
+    font-weight: bold !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    box-shadow: 0 4px 15px rgba(79, 38, 166, 0.3) !important;
+}
+
+#submit_btn:hover, button.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(79, 38, 166, 0.4) !important;
+}
+
+/* フォーム要素スタイル */
+.input-container {
+    background: rgba(38, 42, 115, 0.05);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(191, 65, 124, 0.1);
+}
+
+/* アニメーション */
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(10px);
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+    #header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    #logo_container {
+        width: 150px;
+        height: 150px;
+        margin-top: 1rem;
+    }
+}
