@@ -1,1 +1,1 @@
-Now that you have brainstormed ideas and created a rough outline, it's time to write the actual podcast dialogue. Aim for a natural, conversational flow between the host and any guest speakers. Incorporate the best ideas from your brainstorming session and make sure to explain any complex topics in an easy-to-understand way.
+アイデアをブレインストーミングし、大まかなアウトラインを作成したので、実際のポッドキャスト対話を書く時が来ました。ホストとゲストスピーカーの間で自然な会話の流れを目指してください。ブレインストーミングセッションから最高のアイデアを取り入れ、複雑なトピックを分かりやすく説明するようにしてください。

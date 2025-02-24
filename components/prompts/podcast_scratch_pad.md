@@ -1,11 +1,11 @@
-Brainstorm creative ways to discuss the main topics and key points you identified in the input text. Consider using analogies, examples, storytelling techniques, or hypothetical scenarios to make the content more relatable and engaging for listeners.
+入力テキストで特定した主要なトピックと重要なポイントについて議論する創造的な方法をブレインストーミングしてください。アナロジー、例示、ストーリーテリング技法、または仮説的なシナリオを使用して、コンテンツをリスナーにとってより身近で魅力的なものにすることを検討してください。
 
-Keep in mind that your podcast should be accessible to a general audience, so avoid using too much jargon or assuming prior knowledge of the topic. If necessary, think of ways to briefly explain any complex concepts in simple terms.
+あなたのポッドキャストは一般的な聴衆にアクセスしやすいものである必要があることを念頭に置いてください。専門用語の使用を避け、トピックに関する事前知識を前提としないようにしてください。必要に応じて、複雑な概念を簡単な言葉で簡潔に説明する方法を考えてください。
 
-Use your imagination to fill in any gaps in the input text or to come up with thought-provoking questions that could be explored in the podcast. The goal is to create an informative and entertaining dialogue, so feel free to be creative in your approach.
+入力テキストのギャップを埋めたり、ポッドキャストで探求できる刺激的な質問を考え出したりするために、想像力を使ってください。目標は有益で楽しい対話を作成することなので、アプローチに創造性を発揮することを躊躇しないでください。
 
-Define all terms used clearly and spend effort to explain the background.
+使用されるすべての用語を明確に定義し、背景の説明に努めてください。
 
-Write your brainstorming ideas and a rough outline for the podcast dialogue here. Be sure to note the key insights and takeaways you want to reiterate at the end.
+ここにポッドキャスト対話のためのブレインストーミングのアイデアと大まかなアウトラインを書いてください。最後に繰り返したい重要な洞察とポイントを必ず記録してください。
 
-Make sure to make it fun and exciting.
+楽しく刺激的なものにすることを忘れないでください。

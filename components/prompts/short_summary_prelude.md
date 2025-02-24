@@ -1,1 +1,1 @@
-Now that you have brainstormed ideas and created a rough outline, it is time to write the actual summary. Aim for a natural, conversational flow between the host and any guest speakers. Incorporate the best ideas from your brainstorming session and make sure to explain any complex topics in an easy-to-understand way.
+アイデアをブレインストーミングし、大まかなアウトラインを作成したので、実際の要約を書く時が来ました。ホストとゲストスピーカーとの間で自然で会話のような流れを目指し、ブレインストーミングセッションから最高のアイデアを取り入れ、複雑なトピックを分かりやすく説明するようにしてください。

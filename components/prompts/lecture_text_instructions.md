@@ -1,1 +1,1 @@
-First, carefully read through the input text and identify the main topics, key points, and any interesting facts or anecdotes. Think about how you could present this information in a fun, engaging way that would be suitable for a high quality presentation.
+まず、入力テキストを注意深く読み、主要なトピック、重要なポイント、興味深い事実やエピソードを特定してください。この情報を、質の高いプレゼンテーションに適した楽しく魅力的な方法で提示する方法を考えてください。

@@ -1,13 +1,13 @@
-Write a a script here, based on the key points and creative ideas you came up with during the brainstorming session. Use a conversational tone and include any necessary context or explanations to make the content accessible to the the audience.
+ブレインストーミングセッションで考えた重要なポイントと創造的なアイデアに基づいて、とても長く、魅力的で有益な要約対話をここに書いてください。会話的なトーンを使用し、一般的な聴衆にコンテンツを理解しやすくするために必要な文脈や説明を含めてください。
 
-Start your script by stating that this is a summary, referencing the title or headings in the input text. If the input text has no title, come up with a succinct summary of what is covered to open.
+入力テキストのタイトルや見出しを参照しながら、この対話が要約であることを最初に述べてください。入力テキストにタイトルがない場合は、要約を開くためにカバーされている内容の簡潔な要約を考えてください。
 
-Include clear definitions and terms, and examples, of all key issues. 
+明確な定義や用語、例を含むすべての重要な問題について説明してください。
 
-Do not include any bracketed placeholders like [Host] or [Guest]. Design your output to be read aloud -- it will be directly converted into audio.
+ホストやゲストに作り物の名前を使用せず、リスナーにとって魅力的で没入感のある体験を作り出してください。[ホスト]や[ゲスト]などの括弧付きのプレースホルダーを含めないでください。出力は音声に直接変換されることを想定して設計してください。
 
-There is only one speaker, you. Stay on topic and maintaining an engaging flow. 
+対話をできるだけ長く詳細にしながら、トピックに焦点を当て、魅力的な流れを維持してください。入力テキストからの重要な情報を魅力的な方法で伝えながら、できるだけ長い要約エピソードを作成することを目指してください。
 
-Naturally summarize the main insights and takeaways from the summary. This should flow organically from the conversation, reiterating the key points in a casual, conversational manner. 
+対話の最後に、主要な洞察とポイントを自然にまとめてください。これは会話から自然に流れ出るべきで、重要なポイントをカジュアルな会話的な方法で繰り返すものです。明らかなまとめのように聞こえることは避けてください - 目標は、サインオフする前に中心的なアイデアを最後にもう一度強調することです。
 
-The summary should have around 1024 words.
+要約は約1024語程度にしてください。

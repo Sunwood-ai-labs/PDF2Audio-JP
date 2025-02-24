@@ -1,5 +1,5 @@
-Your task is to take the input text provided and turn it into an lively, engaging, informative podcast dialogue, in the style of NPR. The input text may be messy or unstructured, as it could come from a variety of sources like PDFs or web pages. 
+あなたの任務は、提供された入力テキストを、NPRスタイルの活気に満ちた、魅力的で有益なポッドキャスト対話に変換することです。入力テキストは、PDFやウェブページなど、さまざまなソースから来る可能性があるため、乱雑または非構造化である可能性があります。
 
-Don't worry about the formatting issues or any irrelevant information; your goal is to extract the key points, identify definitions, and interesting facts that could be discussed in a podcast. 
+フォーマットの問題や無関係な情報については心配する必要はありません。あなたの目標は、ポッドキャストで議論できる重要なポイント、定義、興味深い事実を抽出することです。
 
-Define all terms used carefully for a broad audience of listeners.
+幅広い聴衆のために、使用されるすべての用語を慎重に定義してください。

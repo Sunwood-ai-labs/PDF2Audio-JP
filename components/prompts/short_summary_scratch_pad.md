@@ -1,7 +1,11 @@
-Brainstorm creative ways to present the main topics and key points you identified in the input text. Consider using analogies, examples, or hypothetical scenarios to make the content more relatable and engaging for listeners.
+入力テキストで特定した主要なトピックと重要なポイントについて、それらを簡潔に要約する創造的な方法をブレインストーミングしてください。アナロジー、例示、ストーリーテリング技法、または仮説的なシナリオを使用して、コンテンツをリスナーにとってより身近で魅力的なものにすることを検討してください。
 
-Keep in mind that your summary should be accessible to a general audience, so avoid using too much jargon or assuming prior knowledge of the topic. If necessary, think of ways to briefly explain any complex concepts in simple terms. Define all terms used clearly and spend effort to explain the background.
+あなたの要約は一般的な聴衆にアクセスしやすいものである必要があることを念頭に置いてください。専門用語の使用を避け、トピックに関する事前知識を前提としないようにしてください。必要に応じて、複雑な概念を簡単な言葉で簡潔に説明する方法を考えてください。
 
-Write your brainstorming ideas and a rough outline for the summary here. Be sure to note the key insights and takeaways you want to reiterate at the end.
+入力テキストのギャップを埋めたり、要約で探求できる刺激的な質問を考え出したりするために、想像力を使ってください。目標は有益で魅力的な要約を作成することなので、アプローチに創造性を発揮することを躊躇しないでください。
 
-Make sure to make it engaging and exciting.
+使用されるすべての用語を明確に定義し、背景の説明に努めてください。
+
+ここに要約のためのブレインストーミングのアイデアと大まかなアウトラインを書いてください。最後に繰り返したい重要な洞察とポイントを必ず記録してください。
+
+魅力的な要約を作成することを目指してください。

@@ -1,9 +1,9 @@
-Write a very long, engaging, informative podcast dialogue here, based on the key points and creative ideas you came up with during the brainstorming session. Use a conversational tone and include any necessary context or explanations to make the content accessible to a general audience. 
+ブレインストーミングセッションで考えた重要なポイントと創造的なアイデアに基づいて、とても長く、魅力的で有益なポッドキャスト対話をここに書いてください。会話的なトーンを使用し、一般的な聴衆にコンテンツを理解しやすくするために必要な文脈や説明を含めてください。
 
-Never use made-up names for the hosts and guests, but make it an engaging and immersive experience for listeners. Do not include any bracketed placeholders like [Host] or [Guest]. Design your output to be read aloud -- it will be directly converted into audio.
+ホストやゲストに作り物の名前を使用せず、リスナーにとって魅力的で没入感のある体験を作り出してください。[ホスト]や[ゲスト]などの括弧付きのプレースホルダーを含めないでください。出力は音声に直接変換されることを想定して設計してください。
 
-Make the dialogue as long and detailed as possible, while still staying on topic and maintaining an engaging flow. Aim to use your full output capacity to create the longest podcast episode you can, while still communicating the key information from the input text in an entertaining way.
+対話をできるだけ長く詳細にしながら、トピックに焦点を当て、魅力的な流れを維持してください。入力テキストからの重要な情報を楽しい方法で伝えながら、できるだけ長いポッドキャストエピソードを作成することを目指してください。
 
-At the end of the dialogue, have the host and guest speakers naturally summarize the main insights and takeaways from their discussion. This should flow organically from the conversation, reiterating the key points in a casual, conversational manner. Avoid making it sound like an obvious recap - the goal is to reinforce the central ideas one last time before signing off. 
+対話の最後に、ホストとゲストスピーカーに、彼らの議論から得られた主要な洞察とポイントを自然にまとめてもらってください。これは会話から自然に流れ出るべきで、重要なポイントをカジュアルな会話的な方法で繰り返すものです。明らかなまとめのように聞こえることは避けてください - 目標は、サインオフする前に中心的なアイデアを最後にもう一度強調することです。
 
-The podcast should have around 20000 words.
+ポッドキャストは約20,000語程度にしてください。

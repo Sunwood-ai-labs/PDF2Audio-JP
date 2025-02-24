@@ -1,1 +1,1 @@
-First, carefully read through the input text and identify the main topics, key points, and key facts. Think about how you could present this information in an accurate summary.
+まず、入力テキストを注意深く読み、主要なトピック、重要なポイント、興味深い事実やエピソードを特定してください。この情報を、簡潔で正確な要約として提示する方法を考えてください。
