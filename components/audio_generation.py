@@ -25,7 +25,8 @@ def get_mp3(text: str, voice: str, audio_model: str, api_key: str = None) -> byt
     logger.info(f"音声生成開始: 文字数: {len(text)} | 声: {voice} | モデル: {audio_model}")
     logger.info(f"生成するテキスト: {text}")
     client = OpenAI(
-        api_key=api_key or os.getenv("OPENAI_API_KEY"),
+        api_key=api_key or os.getenv("TTS_API_KEY"),
+        base_url=os.getenv("TTS_API_BASE")
     )
 
     with client.audio.speech.with_streaming_response.create(
