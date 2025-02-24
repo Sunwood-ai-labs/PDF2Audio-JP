@@ -52,91 +52,114 @@ def gradio_ui():
         #gr.Markdown("")    
         submit_btn = gr.Button("オーディオを生成", elem_id="submit_btn")
 
-        with gr.Row(elem_id="main_container"):
-            with gr.Column(scale=2, elem_classes="input-container"):
-                files = gr.Files(  # gr.File から gr.Files に変更
-                    label="ファイルをアップロード (対応形式: PDF, Markdown, テキスト)", 
-                    file_types=[".pdf", ".md", ".txt"],
-                    type="filepath",  
-                    interactive=True,
-                    file_count="multiple"
-                )
-                
-                openai_api_key = gr.Textbox(
-                    label="OpenAI APIキー",
-                    value=openai_api_key_default,  # デフォルト値を環境変数から設定
-                    visible=True,  # Always show the API key field
-                    placeholder="OpenAI APIキーを入力してください...",
-                    type="password"  # Hide the API key input
-                )
-                text_model = gr.Dropdown(
-                    label="テキスト生成モデル",
-                    choices=STANDARD_TEXT_MODELS,
-                    value="gpt-4o-mini", #"gpt-4o-mini",
-                    info="対話テキストを生成するモデルを選択してください。",
-                )
-                audio_model = gr.Dropdown(
-                    label="音声生成モデル",
-                    choices=STANDARD_AUDIO_MODELS,
-                    value="tts-1",
-                    info="音声を生成するモデルを選択してください。",
-                )
-                speaker_1_voice = gr.Dropdown(
-                    label="ホストの声",
-                    choices=STANDARD_VOICES,
-                    value="alloy",
-                    info="ホストの声を選択してください。",
-                )
-                speaker_2_voice = gr.Dropdown(
-                    label="ゲストの声",
-                    choices=STANDARD_VOICES,
-                    value="echo",
-                    info="ゲストの声を選択してください。",
-                )
-                api_base = gr.Textbox(
-                    label="カスタムAPIベースURL",
-                    placeholder="カスタム/ローカルモデルを使用する場合はAPIベースURLを入力してください...",
-                    info="カスタムまたはローカルモデルを使用する場合は、APIベースURLを入力してください。例: llama.cpp RESTサーバーの場合は http://localhost:8080/v1",
-                )
+        with gr.Tab("メイン"):
+            with gr.Row(elem_id="main_container"):
+                with gr.Column(scale=2, elem_classes="input-container"):
+                    files = gr.Files(  # gr.File から gr.Files に変更
+                        label="ファイルをアップロード (対応形式: PDF, Markdown, テキスト)", 
+                        file_types=[".pdf", ".md", ".txt"],
+                        type="filepath",  
+                        interactive=True,
+                        file_count="multiple"
+                    )
+                    
+                    audio_model = gr.Dropdown(
+                        label="音声生成モデル",
+                        choices=STANDARD_AUDIO_MODELS,
+                        value="tts-1",
+                        info="音声を生成するモデルを選択してください。",
+                    )
+                    speaker_1_voice = gr.Dropdown(
+                        label="ホストの声",
+                        choices=STANDARD_VOICES,
+                        value="alloy",
+                        info="ホストの声を選択してください。",
+                    )
+                    speaker_2_voice = gr.Dropdown(
+                        label="ゲストの声",
+                        choices=STANDARD_VOICES,
+                        value="echo",
+                        info="ゲストの声を選択してください。",
+                    )
+                    api_base = gr.Textbox(
+                        label="カスタムAPIベースURL",
+                        placeholder="カスタム/ローカルモデルを使用する場合はAPIベースURLを入力してください...",
+                        info="カスタムまたはローカルモデルを使用する場合は、APIベースURLを入力してください。例: llama.cpp RESTサーバーの場合は http://localhost:8080/v1",
+                    )
 
-            with gr.Column(scale=3):
-                template_dropdown = gr.Dropdown(
-                    label="指示テンプレート",
-                    choices=list(INSTRUCTION_TEMPLATES.keys()),
-                    value="podcast",
-                    info="使用する指示テンプレートを選択してください。より細かい結果を得るために、任意のフィールドを編集することもできます。",
-                )
-                intro_instructions = gr.Textbox(
-                    label="導入指示",
-                    lines=10,
-                    value=INSTRUCTION_TEMPLATES["podcast"]["intro"],
-                    info="対話を生成するための導入指示を入力してください。",
-                )
-                text_instructions = gr.Textbox(
-                    label="標準テキスト分析指示",
-                    lines=10,
-                    placeholder="テキスト分析指示を入力...",
-                    value=INSTRUCTION_TEMPLATES["podcast"]["text_instructions"],
-                    info="生データとテキストを分析するための指示を入力してください。",
-                )
-                scratch_pad_instructions = gr.Textbox(
-                    label="メモ帳指示",
-                    lines=15,
-                    value=INSTRUCTION_TEMPLATES["podcast"]["scratch_pad"],
-                    info="プレゼンテーション/対話のコンテンツをブレインストーミングするためのメモ帳指示を入力してください。",
-                )
-                prelude_dialog = gr.Textbox(
-                    label="前置き対話",
-                    lines=5,
-                    value=INSTRUCTION_TEMPLATES["podcast"]["prelude"],
-                    info="プレゼンテーション/対話が開発される前の前置き指示を入力してください。",
-                )
-                podcast_dialog_instructions = gr.Textbox(
-                    label="ポッドキャスト対話指示",
-                    lines=20,
-                    value=INSTRUCTION_TEMPLATES["podcast"]["dialog"],
-                    info="プレゼンテーションまたはポッドキャストの対話を生成するための指示を入力してください。",
-                )
+                with gr.Column(scale=3):
+                    template_dropdown = gr.Dropdown(
+                        label="指示テンプレート",
+                        choices=list(INSTRUCTION_TEMPLATES.keys()),
+                        value="podcast",
+                        info="使用する指示テンプレートを選択してください。より細かい結果を得るために、任意のフィールドを編集することもできます。",
+                    )
+                    intro_instructions = gr.Textbox(
+                        label="導入指示",
+                        lines=10,
+                        value=INSTRUCTION_TEMPLATES["podcast"]["intro"],
+                        info="対話を生成するための導入指示を入力してください。",
+                    )
+                    text_instructions = gr.Textbox(
+                        label="標準テキスト分析指示",
+                        lines=10,
+                        placeholder="テキスト分析指示を入力...",
+                        value=INSTRUCTION_TEMPLATES["podcast"]["text_instructions"],
+                        info="生データとテキストを分析するための指示を入力してください。",
+                    )
+                    scratch_pad_instructions = gr.Textbox(
+                        label="メモ帳指示",
+                        lines=15,
+                        value=INSTRUCTION_TEMPLATES["podcast"]["scratch_pad"],
+                        info="プレゼンテーション/対話のコンテンツをブレインストーミングするためのメモ帳指示を入力してください。",
+                    )
+                    prelude_dialog = gr.Textbox(
+                        label="前置き対話",
+                        lines=5,
+                        value=INSTRUCTION_TEMPLATES["podcast"]["prelude"],
+                        info="プレゼンテーション/対話が開発される前の前置き指示を入力してください。",
+                    )
+                    podcast_dialog_instructions = gr.Textbox(
+                        label="ポッドキャスト対話指示",
+                        lines=20,
+                        value=INSTRUCTION_TEMPLATES["podcast"]["dialog"],
+                        info="プレゼンテーションまたはポッドキャストの対話を生成するための指示を入力してください。",
+                    )
+
+        with gr.Tab("API設定"):
+            with gr.Row():
+                with gr.Column():
+                    gr.Markdown("### LLM API設定")
+                    llm_api_key = gr.Textbox(
+                        label="LLM API Key",
+                        value=os.getenv("LLM_API_KEY", ""),
+                        type="password",
+                        placeholder="LLM APIキーを入力してください"
+                    )
+                    llm_api_base = gr.Textbox(
+                        label="LLM API Base URL",
+                        value=os.getenv("LLM_API_BASE", ""),
+                        placeholder="LLM APIのベースURLを入力してください"
+                    )
+                    text_model = gr.Dropdown(
+                        label="テキスト生成モデル",
+                        choices=STANDARD_TEXT_MODELS,
+                        value="gpt-4o-mini",
+                        info="対話テキストを生成するモデルを選択してください。",
+                    )
+                with gr.Column():
+                    gr.Markdown("### TTS API設定")
+                    tts_api_key = gr.Textbox(
+                        label="TTS API Key",
+                        value=os.getenv("TTS_API_KEY", ""),
+                        type="password",
+                        placeholder="TTS APIキーを入力してください"
+                    )
+                    tts_api_base = gr.Textbox(
+                        label="TTS API Base URL",
+                        value=os.getenv("TTS_API_BASE", ""),
+                        placeholder="TTS APIのベースURLを入力してください"
+                    )
 
         audio_output = gr.Audio(label="オーディオ", format="mp3", interactive=False, autoplay=False)
         transcript_output = gr.Textbox(label="トランスクリプト", lines=20, show_copy_button=True)
@@ -176,8 +199,11 @@ def gradio_ui():
                 speaker_1_voice,  # ホストの声
                 speaker_2_voice,  # ゲストの声
                 template_dropdown,  # 指示テンプレート
-                openai_api_key,  # APIキー
+                llm_api_key,  # LLM APIキー
                 api_base,  # APIベースURL
+                llm_api_base, # LLM APIベースURL
+                tts_api_key,  # TTS APIキー
+                tts_api_base, # TTS APIベースURL
                 intro_instructions,
                 text_instructions,
                 scratch_pad_instructions,
@@ -201,39 +227,25 @@ def gradio_ui():
         )
 
         regenerate_btn.click(
-            fn=lambda use_edit, edit, *args: process_feedback_and_regenerate(
-                args[0],  # files
-                args[1],  # text_model
-                args[2],  # audio_model
-                args[3],  # speaker_1_voice
-                args[4],  # speaker_2_voice
-                args[5],  # template_dropdown
-                args[6],  # openai_api_key
-                args[7],  # api_base
-                args[8],  # intro_instructions
-                args[9],  # text_instructions
-                args[10],  # scratch_pad_instructions
-                args[11],  # prelude_dialog
-                args[12],  # podcast_dialog_instructions
-                edit if use_edit else "",  # edited_transcript
-                args[13]  # user_feedback
-            ),
+            fn=process_feedback_and_regenerate,
             inputs=[
-                use_edited_transcript,
-                edited_transcript,
-                files,
-                text_model,
-                audio_model,
-                speaker_1_voice,
-                speaker_2_voice,
-                template_dropdown,
-                openai_api_key,
-                api_base,
+                files,  # ファイルを最初に
+                text_model,  # モデル名
+                audio_model,  # TTSモデル
+                speaker_1_voice,  # ホストの声
+                speaker_2_voice,  # ゲストの声
+                template_dropdown,  # 指示テンプレート
+                llm_api_key,  # LLM APIキー
+                api_base,  # APIベースURL
+                llm_api_base, # LLM APIベースURL
+                tts_api_key,  # TTS APIキー
+                tts_api_base, # TTS APIベースURL
                 intro_instructions,
                 text_instructions,
                 scratch_pad_instructions,
                 prelude_dialog,
                 podcast_dialog_instructions,
+                edited_transcript,
                 user_feedback
             ],
             outputs=[audio_output, transcript_output, original_text_output, error_output]
