@@ -3,6 +3,8 @@ from components.instruction_templates import INSTRUCTION_TEMPLATES
 from components.utility_functions import read_readme, update_instructions
 from components.standard_values import STANDARD_TEXT_MODELS, STANDARD_AUDIO_MODELS, STANDARD_VOICES
 from components.feedback_processing import process_feedback_and_regenerate
+import os
+from dotenv import load_dotenv
 
 def load_css(file_path: str) -> str:
     """CSSファイルを読み込む関数
@@ -21,11 +23,15 @@ def load_css(file_path: str) -> str:
         return ""
 
 def gradio_ui():
+    # 環境変数の読み込み
+    load_dotenv()
+    openai_api_key_default = os.getenv("OPENAI_API_KEY", "")
+
     css_content = load_css("static/styles.css")
     
     with gr.Blocks(
         title="PDFをオーディオポッドキャスト、講義、要約などに変換", 
-        theme=gr.themes.Soft(),
+        theme=gr.themes.Ocean(),
         css=css_content
     ) as demo:
         
@@ -48,10 +54,17 @@ def gradio_ui():
 
         with gr.Row(elem_id="main_container"):
             with gr.Column(scale=2, elem_classes="input-container"):
-                files = gr.Files(label="PDFファイル", file_types=["pdf"], )
+                files = gr.Files(  # gr.File から gr.Files に変更
+                    label="ファイルをアップロード (対応形式: PDF, Markdown, テキスト)", 
+                    file_types=[".pdf", ".md", ".txt"],
+                    type="filepath",  
+                    interactive=True,
+                    file_count="multiple"
+                )
                 
                 openai_api_key = gr.Textbox(
                     label="OpenAI APIキー",
+                    value=openai_api_key_default,  # デフォルト値を環境変数から設定
                     visible=True,  # Always show the API key field
                     placeholder="OpenAI APIキーを入力してください...",
                     type="password"  # Hide the API key input
@@ -59,7 +72,7 @@ def gradio_ui():
                 text_model = gr.Dropdown(
                     label="テキスト生成モデル",
                     choices=STANDARD_TEXT_MODELS,
-                    value="o1-preview-2024-09-12", #"gpt-4o-mini",
+                    value="gpt-4o-mini", #"gpt-4o-mini",
                     info="対話テキストを生成するモデルを選択してください。",
                 )
                 audio_model = gr.Dropdown(
@@ -157,12 +170,20 @@ def gradio_ui():
         submit_btn.click(
             fn=process_feedback_and_regenerate,
             inputs=[
-                files, openai_api_key, text_model, audio_model, 
-                speaker_1_voice, speaker_2_voice, api_base,
-                intro_instructions, text_instructions, scratch_pad_instructions, 
-                prelude_dialog, podcast_dialog_instructions, 
-                edited_transcript,  # placeholder for edited_transcript
-                user_feedback,  # placeholder for user_feedback
+                files,  # ファイルを最初に
+                text_model,  # モデル名
+                audio_model,  # TTSモデル
+                speaker_1_voice,  # 音声ID
+                template_dropdown,  # 指示テンプレート
+                openai_api_key,  # APIキー
+                api_base,  # APIベースURL
+                intro_instructions,
+                text_instructions,
+                scratch_pad_instructions,
+                prelude_dialog,
+                podcast_dialog_instructions,
+                edited_transcript,
+                user_feedback
             ],
             outputs=[audio_output, transcript_output, original_text_output, error_output]
         ).then(
@@ -180,16 +201,36 @@ def gradio_ui():
 
         regenerate_btn.click(
             fn=lambda use_edit, edit, *args: process_feedback_and_regenerate(
-                *args[:12],  # All inputs up to podcast_dialog_instructions
-                edit if use_edit else "",  # Use edited transcript if checkbox is checked, otherwise empty string
-                *args[12:]  # user_feedback and original_text_output
+                args[0],  # files
+                args[1],  # text_model
+                args[2],  # audio_model
+                args[3],  # speaker_1_voice
+                args[4],  # template_dropdown
+                args[5],  # openai_api_key
+                args[6],  # api_base
+                args[7],  # intro_instructions
+                args[8],  # text_instructions
+                args[9],  # scratch_pad_instructions
+                args[10],  # prelude_dialog
+                args[11],  # podcast_dialog_instructions
+                edit if use_edit else "",  # edited_transcript
+                args[12]  # user_feedback
             ),
             inputs=[
-                use_edited_transcript, edited_transcript,
-                files, openai_api_key, text_model, audio_model, 
-                speaker_1_voice, speaker_2_voice, api_base,
-                intro_instructions, text_instructions, scratch_pad_instructions, 
-                prelude_dialog, podcast_dialog_instructions,
+                use_edited_transcript,
+                edited_transcript,
+                files,
+                text_model,
+                audio_model,
+                speaker_1_voice,
+                template_dropdown,
+                openai_api_key,
+                api_base,
+                intro_instructions,
+                text_instructions,
+                scratch_pad_instructions,
+                prelude_dialog,
+                podcast_dialog_instructions,
                 user_feedback
             ],
             outputs=[audio_output, transcript_output, original_text_output, error_output]
