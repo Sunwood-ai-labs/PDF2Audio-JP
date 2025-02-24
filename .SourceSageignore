@@ -51,4 +51,4 @@ repository_summary.md
 # Python仮想環境
 venv
 .venv
-
+debug_logs
