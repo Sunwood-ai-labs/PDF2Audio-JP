@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "7860:7860"
+    volumes:
+      - .:/app
+    environment:
+      - GRADIO_SERVER_NAME=0.0.0.0
+    restart: unless-stopped
