@@ -66,19 +66,19 @@ def gradio_ui():
                     audio_model = gr.Dropdown(
                         label="音声生成モデル",
                         choices=STANDARD_AUDIO_MODELS,
-                        value="tts-1",
+                        value=os.getenv("DEFAULT_TTS_MODEL", "tts-1"),
                         info="音声を生成するモデルを選択してください。",
                     )
                     speaker_1_voice = gr.Dropdown(
                         label="ホストの声",
                         choices=STANDARD_VOICES,
-                        value="alloy",
+                        value=os.getenv("DEFAULT_HOST_VOICE", "alloy"),
                         info="ホストの声を選択してください。",
                     )
                     speaker_2_voice = gr.Dropdown(
                         label="ゲストの声",
                         choices=STANDARD_VOICES,
-                        value="echo",
+                        value=os.getenv("DEFAULT_GUEST_VOICE", "echo"),
                         info="ゲストの声を選択してください。",
                     )
                     api_base = gr.Textbox(
@@ -144,7 +144,7 @@ def gradio_ui():
                     text_model = gr.Dropdown(
                         label="テキスト生成モデル",
                         choices=STANDARD_TEXT_MODELS,
-                        value="gpt-4o-mini",
+                        value=os.getenv("DEFAULT_LLM_MODEL", "gpt-4o-mini"),
                         info="対話テキストを生成するモデルを選択してください。",
                     )
                 with gr.Column():
