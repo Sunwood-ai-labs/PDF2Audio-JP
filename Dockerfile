@@ -5,6 +5,8 @@ WORKDIR /app
 # システムの依存関係をインストール
 RUN apt-get update && apt-get install -y \
     build-essential \
+    curl \
+    ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
 # Pythonパッケージをインストール
