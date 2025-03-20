@@ -7,8 +7,7 @@ STANDARD_TEXT_MODELS = [
     "o1-mini-2024-09-12",
     "o1-mini",
     "chatgpt-4o-latest",
-    "gpt-4-turbo",
-    "openai/custom_model",
+    "gpt-4-turbo"
 ]
 
 STANDARD_AUDIO_MODELS = [

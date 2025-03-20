@@ -7,14 +7,6 @@ import os
 from dotenv import load_dotenv
 
 def load_css(file_path: str) -> str:
-    """CSSファイルを読み込む関数
-
-    Args:
-        file_path (str): CSSファイルのパス
-
-    Returns:
-        str: CSSファイルの内容
-    """
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             return f.read()
@@ -55,7 +47,7 @@ def gradio_ui():
         with gr.Tab("メイン"):
             with gr.Row(elem_id="main_container"):
                 with gr.Column(scale=2, elem_classes="input-container"):
-                    files = gr.Files(  # gr.File から gr.Files に変更
+                    files = gr.Files(
                         label="ファイルをアップロード (対応形式: PDF, Markdown, テキスト)", 
                         file_types=[".pdf", ".md", ".txt"],
                         type="filepath",  
@@ -141,11 +133,10 @@ def gradio_ui():
                         value=os.getenv("LLM_API_BASE", ""),
                         placeholder="LLM APIのベースURLを入力してください"
                     )
-                    text_model = gr.Dropdown(
-                        label="テキスト生成モデル",
-                        choices=STANDARD_TEXT_MODELS,
+                    text_model = gr.Textbox(
+                        label="テキスト生成モデル名",
                         value=os.getenv("DEFAULT_LLM_MODEL", "gpt-4o-mini"),
-                        info="対話テキストを生成するモデルを選択してください。",
+                        info="使用するモデル名を入力してください。",
                     )
                 with gr.Column():
                     gr.Markdown("### TTS API設定")
@@ -170,20 +161,18 @@ def gradio_ui():
         edited_transcript = gr.Textbox(label="ここでトランスクリプトを編集してください。例: テキストに編集指示を明確に記載します。例: '[マテリオミクスの定義を追加]'", lines=20, visible=False,
                                        show_copy_button=True, interactive=False)
 
-        user_feedback = gr.Textbox(label="フィードバックやメモを入力", lines=10, #placeholder="フィードバックやメモをここに入力してください..."
-                                   )
+        user_feedback = gr.Textbox(label="フィードバックやメモを入力", lines=10)
         regenerate_btn = gr.Button("編集とフィードバックを反映してオーディオを再生成")
-        # Function to update the interactive state of edited_transcript
+
         def update_edit_box(checkbox_value):
             return gr.update(interactive=checkbox_value, lines=20 if checkbox_value else 20, visible=True if checkbox_value else False)
 
-        # Update the interactive state of edited_transcript when the checkbox is toggled
         use_edited_transcript.change(
             fn=update_edit_box,
             inputs=[use_edited_transcript],
             outputs=[edited_transcript]
         )
-        # Update instruction fields when template is changed
+
         template_dropdown.change(
             fn=update_instructions,
             inputs=[template_dropdown],
@@ -193,17 +182,17 @@ def gradio_ui():
         submit_btn.click(
             fn=process_feedback_and_regenerate,
             inputs=[
-                files,  # ファイルを最初に
-                text_model,  # モデル名
-                audio_model,  # TTSモデル
-                speaker_1_voice,  # ホストの声
-                speaker_2_voice,  # ゲストの声
-                template_dropdown,  # 指示テンプレート
-                llm_api_key,  # LLM APIキー
-                api_base,  # APIベースURL
-                llm_api_base, # LLM APIベースURL
-                tts_api_key,  # TTS APIキー
-                tts_api_base, # TTS APIベースURL
+                files,
+                text_model,
+                audio_model,
+                speaker_1_voice,
+                speaker_2_voice,
+                template_dropdown,
+                llm_api_key,
+                api_base,
+                llm_api_base,
+                tts_api_key,
+                tts_api_base,
                 intro_instructions,
                 text_instructions,
                 scratch_pad_instructions,
@@ -229,17 +218,17 @@ def gradio_ui():
         regenerate_btn.click(
             fn=process_feedback_and_regenerate,
             inputs=[
-                files,  # ファイルを最初に
-                text_model,  # モデル名
-                audio_model,  # TTSモデル
-                speaker_1_voice,  # ホストの声
-                speaker_2_voice,  # ゲストの声
-                template_dropdown,  # 指示テンプレート
-                llm_api_key,  # LLM APIキー
-                api_base,  # APIベースURL
-                llm_api_base, # LLM APIベースURL
-                tts_api_key,  # TTS APIキー
-                tts_api_base, # TTS APIベースURL
+                files,
+                text_model,
+                audio_model,
+                speaker_1_voice,
+                speaker_2_voice,
+                template_dropdown,
+                llm_api_key,
+                api_base,
+                llm_api_base,
+                tts_api_key,
+                tts_api_base,
                 intro_instructions,
                 text_instructions,
                 scratch_pad_instructions,
