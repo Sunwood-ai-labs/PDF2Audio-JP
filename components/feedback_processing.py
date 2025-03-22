@@ -3,7 +3,7 @@ from pydantic import BaseModel, ValidationError
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 from loguru import logger
 from .dialogue_generation import DialogueConfig, DialogueLine, generate_dialogue
-from .audio_generation import generate_audio_from_transcript
+from .audio.audio_generation import generate_audio_from_transcript
 from pathlib import Path
 from pypdf import PdfReader
 import os
