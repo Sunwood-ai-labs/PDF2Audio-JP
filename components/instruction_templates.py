@@ -14,6 +14,14 @@ INSTRUCTION_TEMPLATES = {
         "prelude": load_prompt(os.path.join("components", "prompts", "podcast_prelude.md")),
         "dialog": load_prompt(os.path.join("components", "prompts", "podcast_dialog.md")),
     },
+################# PODCAST-JP ##################
+    "podcast-jp": {
+        "intro": load_prompt(os.path.join("components", "prompts", "podcast_jp_intro.md")),
+        "text_instructions": load_prompt(os.path.join("components", "prompts", "podcast_jp_text_instructions.md")),
+        "scratch_pad": load_prompt(os.path.join("components", "prompts", "podcast_jp_scratch_pad.md")),
+        "prelude": load_prompt(os.path.join("components", "prompts", "podcast_jp_prelude.md")),
+        "dialog": load_prompt(os.path.join("components", "prompts", "podcast_jp_dialog.md")),
+    },
 ################# MATERIAL DISCOVERY SUMMARY ##################
     "SciAgents material discovery summary": {
         "intro": load_prompt(os.path.join("components", "prompts", "sciagents_intro.md")),
