@@ -16,6 +16,10 @@ RUN pip install --no-cache-dir -r requirements.txt -U
 # アプリケーションコードをコピー
 COPY . .
 
+# 一時ディレクトリの作成とパーミッション設定
+RUN mkdir -p /app/gradio_cached_examples/tmp && \
+    chmod 777 /app/gradio_cached_examples/tmp
+
 # Gradioアプリを起動
 EXPOSE 7860
 CMD ["python", "app.py"]
